@@ -1,0 +1,13 @@
+{
+    "acctConfig": {
+      "client_id": "CLIENT ID HERE",
+      "client_secret": "CLIENT SECRET HERE",
+      "user_agent": "APP NAME HERE, r/PROFILE NAME HERE",
+      "username": "LOGIN USERNAME HERE",
+      "password": "LOGIN PASSWORD HERE"
+    },
+
+    "LMM": {
+        "promptTemplate": "Prompt TEMPLATE HERE with {sub} {auth} {v} sub is subbreddits name, auth is OP profile name, v is post body "
+      }
+  }
