@@ -1,72 +1,19 @@
-import praw
-from scrapeHandler import pullPosts, pullHandler
-from postHandler import docPost, replyToPost
-# from dataHandler import
-from extras import pullNames, checkSubStatus
-from LLM import generate_response
-import time
-import random
+from redditAI import RedditAI
 
+example_prompt="<|im_start|>You are a nice person who looking at a reddit post. you are on the {subname} subbreddit,{username} looking at the post titled {posttitle}. The body text of the post is {postbody}. Your Job is to write a positive comment that will gain likes. You dont want to mention anything about youself, and do not give away your identity. MAKE SURE YOUR RESPONSE DOES NOT HAVE and Preamble or introductory phrases, and it is only the response. Make the response short but long enough to finish your thought<|im_end|><|im_start|>assistant"
+example_subreddit=["IAmA", "todayilearned", "AskScience", "LifeProTips", "ExplainLikeImFive", "YouShouldKnow", "Movies", "science", "history", "worldnews", "DIY", "personalfinance", "Fitness", "technology", "books", "Music", "gaming", "news", "Futurology", "politics", "health", "relationships", "philosophy", "Writing", "Economics", "Psychology", "TrueReddit", "Documentaries"]
 
+RedditBot = RedditAI(
+    client_id="CLIENT ID HERE",
+    client_secret="CLIENT SECRET HERE",
+    user_agent="USER AGENT",
+    username="REDDIT USERNAME",
+    password="REDDIT PASSWORD",
+    AIPromptTemplate=example_prompt,
+    NumberOfComments=25,
+    AIpath="PATH TO MODEL",
+    subredditList= list(example_subreddit),
+    Cooldown= 600
+)
 
-#postQueryCount refers to the ammount of post PER SUBBREDDIT be careful.
-def start(postQueryCount:int):
-    start = time.time()
-    #pull display names of all servers [names]
-    print("Pulling Subreddits...")
-    subreddits = pullNames()
-     #pull posts for each of those serves {title:"", id:""}
-    print("Pulling Posts...")
-    posts = []
-    for sub in subreddits:
-        posts += pullPosts(count=postQueryCount,
-                           subreddit=sub, 
-                           include_body=True, 
-                           only_valid=True, 
-                           include_author=True,
-                           include_subreddit= True,
-                           null_body_isvalid=False
-                           )
-    end = time.time()
-    #print(posts)
-    print(posts)
-    output = "This Successfully Pulled {count} Posts out of the {total} Total Posts Queried within {elapsed} Seconds"
-    print(output.format(count= len(posts),
-                        total=len(subreddits) * postQueryCount,
-                        elapsed= end -start
-                        ))
-    
-    #send to AI log response in doc
-    print("Generating Response...")
-    resp = generate_response(posts[0])
-    print("Posting Response...")
-    docPost(resp, posts[0])
-
-    #sed resposne to red
-
-#start(postQueryCount=2)
-
-
-def stream():
-    #pastpostData = pullData()
-    while True:
-        #pull posts
-        print("Pull Post")
-        posts = pullHandler(5)
-        #pick random one
-        print("Choose Post")
-        selectedPost = random.choice(posts)
-        #crossreference with post list
-        print("Gen resp")
-        resp = generate_response(selectedPost)
-        #try:
-        replyToPost(resp, selectedPost)
-        print("Posted")
-        # except Exception as e:
-        #     print(e)
-        #     print("\n BROKEBOY")
-        #     continue
-        time.sleep(660)
-
-
-stream()
+RedditBot.RunDebug()
